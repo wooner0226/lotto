@@ -15,6 +15,17 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
 <script>
+(() => {
+  // 홈 화면 앱(세로)에서 화면 높이가 실제보다 짧게 잡히면 그 차이만큼 늘림
+  const fix = () => {
+    const portrait = innerHeight > innerWidth;
+    const gap = navigator.standalone === true && portrait ? Math.round(screen.height - innerHeight) : 0;
+    document.documentElement.style.setProperty("--vgap", (gap > 0 && gap < 120 ? gap : 0) + "px");
+  };
+  fix(); addEventListener("resize", fix); addEventListener("orientationchange", () => setTimeout(fix, 300));
+})();
+</script>
+<script>
 // ── 아이폰 웹앱용 연결부: 안드로이드 앱이 하던 일(당첨번호 받기, QR 찍기)을 브라우저로 ──
 (() => {
 "use strict";
@@ -204,7 +215,7 @@ button,select,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--navy);color:var(--on-navy)}
+.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-index:5;background:var(--navy);color:var(--on-navy)}
 .wrap{max-width:520px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .top .wrap{padding-block:10px 0}
 .brand{display:flex;align-items:center;gap:8px}
@@ -220,7 +231,7 @@ button{cursor:pointer}
 .tabs button{background:none;border:0;color:var(--on-navy-dim);padding:10px 0 11px;font-weight:500;font-size:14px;white-space:nowrap;border-bottom:3px solid transparent}
 .tabs button[aria-selected="true"]{color:var(--on-navy);border-bottom-color:var(--on-navy);font-weight:700}
 
-main .wrap{padding-block:16px 56px;display:flex;flex-direction:column;gap:14px}
+main .wrap{padding-block:16px calc(56px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
 .card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .label{font-size:12.5px;color:var(--muted);font-weight:500;letter-spacing:.3px}
@@ -292,7 +303,7 @@ details summary{cursor:pointer;font-weight:500}
 .addform{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}
 .addform input{width:100%;text-align:center;padding:8px 2px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);font-variant-numeric:tabular-nums}
 
-.sheet{position:fixed;inset:0;z-index:20;background:rgba(10,14,25,.5);display:flex;align-items:flex-end;justify-content:center}
+.sheet{position:fixed;inset:0 0 calc(-1 * var(--vgap,0px));z-index:20;background:rgba(10,14,25,.5);display:flex;align-items:flex-end;justify-content:center}
 .sheet .panel{background:var(--surface);width:100%;max-width:520px;border-radius:18px 18px 0 0;
   padding:18px max(16px,env(safe-area-inset-left,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));
   display:flex;flex-direction:column;gap:12px;max-height:92vh;overflow:auto}
@@ -314,12 +325,12 @@ details summary{cursor:pointer;font-weight:500}
 .ticket .del{background:none;border:0;color:var(--faint);font-size:12.5px;padding:4px 0}
 .ticket.fresh{box-shadow:0 0 0 2px var(--accent),var(--shadow)}
 /* 하단 흐르는 공지 */
-.ticker{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--navy);color:#FFFFFF;overflow:hidden;
+.ticker{position:fixed;left:0;right:0;bottom:calc(-1 * var(--vgap,0px));z-index:6;background:var(--navy);color:#FFFFFF;overflow:hidden;
   padding-block:6px calc(6px + env(safe-area-inset-bottom,0px))}
 .ticker span{display:inline-block;white-space:nowrap;font-size:12px;padding-left:100%;animation:tick 26s linear infinite}
 @keyframes tick{to{transform:translateX(-100%)}}
 /* QR 카메라 */
-.cam{position:fixed;inset:0;z-index:30;background:#000}
+.cam{position:fixed;inset:0 0 calc(-1 * var(--vgap,0px));z-index:30;background:#000}
 .cam[hidden]{display:none}
 .cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
 .cam .frame{position:absolute;left:50%;top:42%;width:min(64vw,300px);aspect-ratio:1;transform:translate(-50%,-50%);
@@ -374,7 +385,7 @@ details summary{cursor:pointer;font-weight:500}
 @media (prefers-reduced-motion:reduce){.ball.land,.slide-next,.slide-prev{animation:none}
   .ticker span{animation:none;padding-left:12px;padding-right:12px;display:block;overflow:hidden;text-overflow:ellipsis}}
 [hidden]{display:none!important}
-html{-webkit-text-size-adjust:100%;height:100%;overflow:hidden;overscroll-behavior:none}
+html{-webkit-text-size-adjust:100%;height:calc(100% + var(--vgap,0px));overflow:hidden;overscroll-behavior:none}
 body{height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch}
 .refresh{background:none;border:0;color:var(--on-navy);padding:4px 2px 4px 8px;font-size:18px;line-height:1}
 .refresh.busy{animation:spinr 1s linear infinite}
