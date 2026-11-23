@@ -372,9 +372,10 @@ details summary{cursor:pointer;font-weight:500}
 .win-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;background:var(--surface-2);border-radius:10px;padding:10px 12px;font-variant-numeric:tabular-nums}
 .win-row b{color:var(--hit)}
 @media (prefers-reduced-motion:reduce){.ball.land,.slide-next,.slide-prev{animation:none}
-  .ticker span{animation:none;padding-left:0;white-space:normal}}
+  .ticker span{animation:none;padding-left:12px;padding-right:12px;display:block;overflow:hidden;text-overflow:ellipsis}}
 [hidden]{display:none!important}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;height:100%;overflow:hidden;overscroll-behavior:none}
+body{height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch}
 .refresh{background:none;border:0;color:var(--on-navy);padding:4px 2px 4px 8px;font-size:18px;line-height:1}
 .refresh.busy{animation:spinr 1s linear infinite}
 @keyframes spinr{to{transform:rotate(360deg)}}
@@ -755,7 +756,7 @@ function show(view, dir) {
   const el = $("v-" + view);
   el.classList.remove("slide-next", "slide-prev");
   if (dir) { void el.offsetWidth; el.classList.add(dir > 0 ? "slide-next" : "slide-prev"); }
-  scrollTo(0, 0);
+  document.body.scrollTo(0, 0);
 }
 document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => show(b.dataset.view));
 for (const v of VIEWS) $("v-" + v).addEventListener("animationend", e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove("slide-next", "slide-prev"); });
@@ -1027,6 +1028,8 @@ function showNotice() {
     () => { $("popOk").onclick = closeWithToday; });
 }
 $("tickerText").textContent = NOTICE;
+document.querySelector(".ticker").onclick = () => popup(`<h2>공지사항</h2><p class="pop-body">${NOTICE}</p>
+  <div class="actions"><button class="btn primary" id="popOk">확인</button></div>`, () => { $("popOk").onclick = closeSheet; });
 
 // ── 약·중·강 ──
 const POWER_INFO = {

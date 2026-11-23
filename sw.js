@@ -1,5 +1,5 @@
 // 오프라인에서도 열리게 앱 파일을 저장해 둠. 앱을 고치면 VERSION 숫자를 올리기
-const VERSION = "lotto-v1";
+const VERSION = "lotto-v2";
 const SHELL = ["./", "index.html", "jsQR.js", "manifest.webmanifest", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "favicon.png"];
 
 self.addEventListener("install", e => {
